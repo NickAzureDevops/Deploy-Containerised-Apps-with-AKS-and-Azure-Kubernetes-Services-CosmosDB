@@ -1,0 +1,64 @@
+schedules:
+- cron: "0 20 * * *"
+  displayName: Nightly Destroy of Dev Environment 
+  branches:
+    include:
+    - main
+  always: true
+
+trigger: none
+
+variables:
+  serviceConnectionName: SP
+  backendAzureRmResourceGroupName: rg-tfstate
+  backendAzureRmStorageAccountName: saterraformdevops
+  backendAzureRmContainerName: devtfstate
+  backendAzureRmKey: Festive-Tech-Calender-2022-dev.tfstate
+  workingDirectory: "$(System.DefaultWorkingDirectory)/3-Infrastructure-Deployment/terraform/environments/prod/"
+
+pool:
+  vmImage: ubuntu-latest
+
+jobs:
+  - job: CDDev
+    displayName: DestroyInfra
+    steps:
+      - checkout: self
+        fetchDepth: 0
+        clean: true
+
+      - task: TerraformInstaller@0
+        displayName: "Install Terraform [latest]"
+        inputs:
+          terraformVersion: "latest"
+
+      - task: TerraformTaskV2@2
+        displayName: "Terraform Init"
+        inputs:
+          provider: "azurerm"
+          command: "init"
+          workingDirectory: "${{ variables.workingDirectory }}"
+          backendServiceArm: "${{ variables.serviceConnectionName}}"
+          backendAzureRmResourceGroupName: "${{ variables.backendAzureRmResourceGroupName }}"
+          backendAzureRmStorageAccountName: "${{ variables.backendAzureRmStorageAccountName }}"
+          backendAzureRmContainerName: "${{ variables.backendAzureRmContainerName }}"
+          backendAzureRmKey: "${{ variables.backendAzureRmKey }}"
+
+      - task: TerraformTaskV2@2
+        displayName: "Terraform Plan"
+        # Run plan if apply is true, or if both apply and destroy are false
+        name: terraformPlan
+        inputs:
+          provider: "azurerm"
+          command: "plan"
+          workingDirectory: "${{ variables.workingDirectory }}"
+          environmentServiceNameAzureRM: "${{ variables.serviceConnectionName }}"
+
+      - task: TerraformTaskV2@2
+        displayName: Terraform Destroy
+        name: terraformDestroy
+        inputs:
+          provider: "azurerm"
+          command: "destroy"
+          workingDirectory: "${{ variables.workingDirectory }}"
+          environmentServiceNameAzureRM: "${{ variables.serviceConnectionName }}"

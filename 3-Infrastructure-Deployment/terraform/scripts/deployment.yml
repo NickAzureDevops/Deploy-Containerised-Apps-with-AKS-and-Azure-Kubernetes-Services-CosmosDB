@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wishlistmaker-deployment
+  namespace: wishlist
+spec:
+  selector:
+    matchLabels:
+      app: wishlistmaker-deployment
+  template:
+    metadata:
+      labels:
+        app: wishlistmaker-deployment
+    spec:
+      serviceAccount: fed-sa
+      containers:
+      - name: wishlistmaker-deployment
+        image: acrprodfestivetechuksouth.azurecr.io/wishlist:latest
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+        env:
+        - name: APPINSIGHTS_INSTRUMENTATIONKEY
+          valueFrom:
+            secretKeyRef:
+              name: aikey
+              key: aisecret
+        - name: AZURE_CLIENT_ID
+          value: ""
+        - name: AZURE_TENANT_ID
+          value: ""
+        - name: AZURE_AUTHORITY_HOST
+          value: https://login.microsoftonline.com/
+        - name: AZURE_FEDERATED_TOKEN_FILE
+          value: /var/run/secrets/tokens/azure-identity-token
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wishlistmaker-deployment
+  namespace: wishlist
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: wishlistmaker-deployment
+
+---
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: wishlistmaker-hpa
+  namespace: wishlist
+spec:
+  maxReplicas: 3
+  minReplicas: 2  
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: wishlistmaker-deployment
+  targetCPUUtilizationPercentage: 50

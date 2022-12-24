@@ -1,0 +1,71 @@
+parameters:
+  - name: environment
+    displayName: Environment
+    type: string
+    default: prd
+  - name: apply
+    displayName: Apply
+    type: boolean
+    default: true
+  - name: destroy
+    displayName: Destroy
+    type: boolean
+    default: false
+  
+
+trigger: none
+
+variables:
+- name: serviceConnectionName
+  value: SP
+- name: aks_resourece_group
+  value: rg-aks-prod-festivetech-uksouth
+- name: aksname
+  value: aks-prod-festivetech-uksouth
+- name: helmVersion
+  value: 3.4.1
+
+pool:
+  vmImage: ubuntu-latest
+
+stages :
+  - stage: Prometheus
+    jobs:
+    - job: CDDev
+      displayName: Deploy
+      steps:
+        - checkout: self
+          fetchDepth: 0
+          clean: true
+                  
+        - task: HelmInstaller@1
+          displayName: 'install helm'
+          inputs:
+            helmVersionToInstall: $(helmVersion)
+
+        - task: AzureCLI@2
+          displayName: 'Add repo'
+          inputs:
+            azureSubscription: "${{ variables.serviceConnectionName }}"
+            scriptType: bash
+            scriptLocation: inlineScript
+            addSpnToEnvironment: true
+            inlineScript: |
+              #!/usr/bin/env bash
+              set -x
+              helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+              az aks get-credentials -g ${{ variables.aks_resourece_group }} -n ${{ variables.aksname }} --admin 
+
+        - task: AzureCLI@2
+          displayName: 'Install Chart'
+          inputs:
+            azureSubscription: "${{ variables.serviceConnectionName }}"
+            scriptType: bash
+            scriptLocation: inlineScript
+            addSpnToEnvironment: true
+            inlineScript: |
+              #!/usr/bin/env bash
+              set -x
+              helm repo update 
+              helm install monitoring prometheus-community/kube-prometheus-stack --set grafana.service.type="LoadBalancer" --namespace monitoring
+        
