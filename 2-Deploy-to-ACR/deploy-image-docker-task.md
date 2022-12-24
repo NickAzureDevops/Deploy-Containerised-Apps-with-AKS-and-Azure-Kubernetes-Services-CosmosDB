@@ -32,4 +32,4 @@ On the Deploy-and Push image.yml file, there is a Trivy job that will scan the i
 
 Trivy is a simple and comprehensive vulnerability scanner for containers and other artefacts, suitable for CI. It detects vulnerabilities in OS packages (Alpine, RHEL, CentOS, etc.) and application dependencies (Bundler, Composer, npm, yarn, etc.). It is easy to use and has no dependencies.
 
-![Trivy Results](/2-Deploy-to-ACR//images/trivy.png)
+![Trivy Results](/2-Deploy-to-ACR/images/trivy-results.png)

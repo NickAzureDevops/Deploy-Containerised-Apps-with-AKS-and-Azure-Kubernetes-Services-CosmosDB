@@ -14,11 +14,11 @@ To start with Workload Identity, you must first enable it on the AKS cluster. We
 
 - Go to certificates and secrets and click on federated credentials, then click add credentials and select the option Kubernetes accessing Azure resources.
 
-![azuread federeated creds](/3-Infrastructure-Deployment/images/azuread-federeated-creds.png)
+![azuread federeated creds](/3-Infrastructure-Deployment/images/azuread-federated-creds.png)
 
 - populate the issuer URL from the previous step, make it the same namespace as your cluster for the application and give your service account and credentials a name. The service account name should be the same as the service account script. 
 
-![federeated creds](/3-Infrastructure-Deployment/images/federeated-creds.png)
+![federeated creds](/3-Infrastructure-Deployment/images/frederated-creds.png)
 
 Give the service principle contributor access to the resource group, so it can access the cluster. I recommend giving it access to the entire subscription.
 

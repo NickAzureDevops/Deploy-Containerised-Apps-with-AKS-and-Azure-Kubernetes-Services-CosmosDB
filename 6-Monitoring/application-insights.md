@@ -10,23 +10,23 @@ Go to Azure Portal and find the provisioned Application Insights resource. Azure
 
 - Live metrics stream - The Live Metrics Stream shows your application's real-time performance. 
 
-![Live metrics](/6-Montioring/images/live-metrics.png)
+![Live metrics](/6-Monitoring/images/live-metrics.png)
 
 
 - Application Map - See how your application is architected and how it is performing. You can see the performance of your application over time and drill down the performance of individual components.
 
-![Application Map](/6-Montioring/images/application-map.png)
+![Application Map](/6-Monitoring/images/application-map.png)
 
 - Performance analysis - Diagnose performance issues and find the cause of a performance problem.
 
 - Failure analysis - Diagnose failures and find the cause of the issue. Open the failure details to see the stack trace and other information.
 
-![Failure](/6-Montioring/images/failures.png)
+![Failure](/6-Monitoring/images/failures.png)
 
 
 - Usage analysis - Understand how your users are using your application. The usage analysis shows you the number of users, sessions, and page views. Below is the usage analysis for the application deployed in the AKS cluster.
 
-![Usage](/6-Montioring/images/usage.png)
+![Usage](/6-Monitoring/images/usage.png)
 
 
 References: 
